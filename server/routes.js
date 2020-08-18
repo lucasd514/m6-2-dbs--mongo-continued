@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const { MongoClient } = require("mongodb");
+const { getSeats } = require("./handlers");
 
 require("dotenv").config();
 const { MONGO_URI } = process.env;
@@ -13,35 +14,35 @@ const SEATS_PER_ROW = 12;
 
 // Code that is generating the seats.
 // ----------------------------------
-const seats = {};
-const row = ["A", "B", "C", "D", "E", "F", "G", "H"];
-for (let r = 0; r < row.length; r++) {
-  for (let s = 1; s < 13; s++) {
-    seats[`${row[r]}-${s}`] = {
-      _id: `${row[r]}-${s}`,
-      price: 225,
-      isBooked: false,
-    };
-  }
-}
+// const seats = {};
+// const row = ["A", "B", "C", "D", "E", "F", "G", "H"];
+// for (let r = 0; r < row.length; r++) {
+//   for (let s = 1; s < 13; s++) {
+//     seats[`${row[r]}-${s}`] = {
+//       _id: `${row[r]}-${s}`,
+//       price: 225,
+//       isBooked: false,
+//     };
+//   }
+// }
 
-let sendSeats = Object.values(seats);
-const batchImport = async () => {
-  try {
-    const client = await MongoClient(MONGO_URI, options);
-    await client.connect();
-    const db = client.db("exercise_1");
-    const r = await db.collection("seats").insertMany(sendSeats);
-    assert.equal(1, r.insertedCount);
-    client.close();
+// let sendSeats = Object.values(seats);
+// const batchImport = async () => {
+//   try {
+//     const client = await MongoClient(MONGO_URI, options);
+//     await client.connect();
+//     const db = client.db("exercise_1");
+//     const r = await db.collection("seats").insertMany(sendSeats);
+//     assert.equal(1, r.insertedCount);
+//     client.close();
 
-    console.log("ale roma");
-  } catch (err) {
-    console.log(err);
-  }
-};
+//     console.log("ale roma");
+//   } catch (err) {
+//     console.log(err);
+//   }
+// };
 
-batchImport();
+// batchImport();
 // ----------------------------------
 //////// HELPERS
 const getRowName = (rowIndex) => {
@@ -67,20 +68,22 @@ const randomlyBookSeats = (num) => {
 
 let state;
 
-router.get("/api/seat-availability", async (req, res) => {
-  if (!state) {
-    state = {
-      bookedSeats: randomlyBookSeats(30),
-    };
-  }
+// router.get("/api/seat-availability", async (req, res) => {
+//   // if (!state) {
+//   //   state = {
+//   //     bookedSeats: randomlyBookSeats(30),
+//   //   };
+//   // }
 
-  return res.json({
-    seats: seats,
-    bookedSeats: state.bookedSeats,
-    numOfRows: 8,
-    seatsPerRow: 12,
-  });
-});
+//   return res.json({
+//     seats: getSeats(),
+//     bookedSeats: state.bookedSeats,
+//     numOfRows: 8,
+//     seatsPerRow: 12,
+//   });
+// });
+
+router.get("/api/seat-availability", getSeats);
 
 let lastBookingAttemptSucceeded = false;
 
