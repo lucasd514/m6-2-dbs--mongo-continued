@@ -52,11 +52,13 @@ export const SeatProvider = ({ children }) => {
   );
 
   const markSeatAsPurchased = React.useCallback(
-    (seatId) =>
-      dispatch({
+    (seatId) => {
+      console.log("inside");
+      return dispatch({
         type: "mark-seat-as-purchased",
         seatId,
-      }),
+      });
+    },
     [dispatch]
   );
 
